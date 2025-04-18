@@ -1,2 +1,5 @@
 *.pyc
 *.egg-info
+
+*.hdf5
+/network_weights
