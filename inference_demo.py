@@ -30,7 +30,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="UniGradICON Registration Visualization")
     parser.add_argument("--fixed", required=True, help="Path to fixed/target image (NRRD)")
     parser.add_argument("--moving", required=True, help="Path to moving/source image (NRRD)")
-    parser.add_argument("--modality", default="mri", choices=["mri", "ct"], help="Image modality")
+    parser.add_argument("--modality", default="ct", choices=["mri", "ct"], help="Image modality")
     parser.add_argument("--slice_idx", type=int, default=87, help="Slice index to visualize")
     parser.add_argument("--output", default="registration_result.png", help="Output image path")
     return parser.parse_args()

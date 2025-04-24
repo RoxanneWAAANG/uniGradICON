@@ -32,6 +32,12 @@ _MICCAI Workshop on Biomedical Image Registration (WBIR) 2024_ https://arxiv.org
 The pre-trained uniGradICON and multiGradICON can be used via [CLI](#-inference-via-cli), [colab notebook](#-inference-via-colab-notebook), and [Slicer Extension](#-inference-via-slicer-extension). The model weights will be downloaded automatically. You can also find the model weights [here](https://github.com/uncbiag/uniGradICON/releases).
 
 ### 👉 Inference via CLI
+
+```
+python3 niigz2nrrd.py 
+python3 inference_demo.py --fixed=uniGradICON/LungCT/LungCT_0021_0000.nrrd --moving=uniGradICON/LungCT/LungCT_0021_0001.nrrd
+```
+
 Installation
 
 ```
