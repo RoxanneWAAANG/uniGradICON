@@ -23,17 +23,32 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn.functional as F
 import itk
+import imageio
+import nibabel as nib
 from unigradicon import get_unigradicon
 
 def parse_args():
-    """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="UniGradICON Registration Visualization")
-    parser.add_argument("--fixed", required=True, help="Path to fixed/target image (NRRD)")
-    parser.add_argument("--moving", required=True, help="Path to moving/source image (NRRD)")
+    parser.add_argument("--fixed", required=True, help="Path to fixed/target image (NRRD or 2D image)")
+    parser.add_argument("--moving", required=True, help="Path to moving/source image (NRRD or 2D image)")
     parser.add_argument("--modality", default="ct", choices=["mri", "ct"], help="Image modality")
-    parser.add_argument("--slice_idx", type=int, default=87, help="Slice index to visualize")
+    parser.add_argument("--slice_idx", type=int, default=0, help="Slice index to visualize")
     parser.add_argument("--output", default="registration_result.png", help="Output image path")
     return parser.parse_args()
+
+def convert_2d_to_3d_nii(input_path):
+    """Convert 2D image file to 3D NIfTI format if necessary"""
+    if input_path.endswith((".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff")):
+        print(f"Detected 2D image file: {input_path}. Converting to NIfTI...")
+        image_2d = imageio.imread(input_path, as_gray=True).astype(np.float32)
+        image_3d = np.expand_dims(image_2d, axis=-1)  # Shape (H, W, 1)
+        affine = np.eye(4)
+        nii_img = nib.Nifti1Image(image_3d, affine)
+        nii_path = os.path.splitext(input_path)[0] + ".nii.gz"
+        nib.save(nii_img, nii_path)
+        print(f"Saved 3D image to: {nii_path}")
+        return nii_path
+    return input_path
 
 def load_image(image_path):
     """Load a medical image using ITK."""
@@ -155,6 +170,10 @@ def main():
     # Check if CUDA is available
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
+
+    # Convert 2D images to 3D NIfTI if needed
+    args.fixed = convert_2d_to_3d_nii(args.fixed)
+    args.moving = convert_2d_to_3d_nii(args.moving)
     
     # Load images
     fixed_image = load_image(args.fixed)
